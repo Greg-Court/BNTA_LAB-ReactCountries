@@ -10,6 +10,8 @@ function App() {
   useEffect(() => {
     const getAllCountries = async () => {
       try {
+        // The fetch() function returns a Promise that resolves to a Response object. 
+        // The Promise resolves with the response object when the request is successful, and rejects with an error when the request fails or encounters a network error.
         const response = await fetch(`https://restcountries.com/v3.1/all`);
         const data = await response.json();
         const sortedData = data.sort((a, b) => {
