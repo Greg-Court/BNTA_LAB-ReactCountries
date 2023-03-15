@@ -1,23 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState, useEffect } from "react";
+import AllCountriesContainer from "./containers/AllCountriesContainer";
+import VisitedCountriesContainer from "./containers/VisitedCountriesContainer";
 
 function App() {
+  const [countries, setCountries] = useState([]);
+  const [visitedCountries, setVisitedCountries] = useState([]);
+
+  useEffect(() => {
+    const getAllCountries = async () => {
+      try {
+        const response = await fetch(`https://restcountries.com/v3.1/all`);
+        const data = await response.json();
+        const sortedData = data.sort((a, b) => {
+          if (a.name.common < b.name.common) {
+            return -1;
+          }
+          if (a.name.common > b.name.common) {
+            return 1;
+          }
+          return 0;
+        });
+        setCountries(sortedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getAllCountries();
+  }, []);
+
+  const handleVisit = (country) => {
+    setVisitedCountries([...visitedCountries, country]);
+    setCountries(countries.filter((c) => c !== country));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1>CountryTracker</h1>
+      <div className="main">
+        <AllCountriesContainer countries={countries} onVisit={handleVisit} />
+        <VisitedCountriesContainer
+          visitedCountries={visitedCountries}
+        />
+      </div>
     </div>
   );
 }
